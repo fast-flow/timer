@@ -3,7 +3,7 @@
 > 可复用定时器，可用于限制邮件短信发送
 
 ````js
-var Timer = require('timer')
+var Timer = require('fast-timer')
 
 var time = new Timer({
     // 10 秒计时
@@ -46,7 +46,7 @@ time.end(function () {
 ## 刷新页面后继续之前读秒进度
 
 ````js
-var Timer = require('timer')
+var Timer = require('fast-timer')
 var time = new Timer({
     second: 20,
     cache: 'abc'
