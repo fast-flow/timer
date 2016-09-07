@@ -1,3 +1,4 @@
+var path = require("path")
 var webpackConfig = {
     devtool: 'source-map',
     externals: {
@@ -74,6 +75,9 @@ fis.match('*.less', {
 // https://github.com/fex-team/fis3/issues/852
 fis.match('*.md:js', {
     parser: [
+        function (content) {
+            return content.replace(/["']fast-timer["']/, '"./index"')
+        },
         fis.plugin('webpack', webpackConfig),
         fis.plugin('inlinecss')
     ]

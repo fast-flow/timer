@@ -9,10 +9,14 @@
     "s": "node docs/_server",
     "update": "sh ./docs/_update.sh"
   },
-  "main": "src/index.js",
+  "main": "index.js",
   "keywords": [
     "keywords"
   ],
+  "repository": {
+   "type": "git",
+   "url": "https://github.com/fast-flow/timer"
+ },
   "author": "nimojs",
   "github_master": "fast-flow",
   "dependencies": {
