@@ -1,5 +1,7 @@
 # timer
 
+<script src="http://cdn.bootcss.com/moment.js/2.14.1/moment.min.js" ></script>
+
 > 可复用定时器，可用于限制邮件短信发送
 
 ```
@@ -10,75 +12,76 @@ npm install fast-timer --save
 
 ````js
 var Timer = require('fast-timer')
-
 var time = new Timer({
-    // 10 秒计时
     second: 10
 })
+var demo1 = document.getElementById('demo1')
+time.watch(function () {
+    demo1.innerHTML = this.second()
+})
 
-time.start()
-// 定时回调
-time.call(function (second) {
-    console.log('second:' + second)
-    console.log('timing:' + time.timing)
-    document.getElementById('demo1').innerHTML = second
-})
 time.end(function () {
-    console.log("It's time")
-    console.log('timing:' + time.timing)
-    document.getElementById('demo1').innerHTML = '结束'
+    demo1.innerHTML = 'end'
 })
+time.run()
 /*
     0s
-    call() second: 10  timing: true
+    watch() second: 10
 
     1s
-    call() second: 9  timing: true
+    watch() second: 9
 
     2s
-    call() second: 8  timing: true
+    watch() second: 8
 
     ...
 
     8s
-    call() second: 2  timing: true
+    watch() second: 2
 
     9s
-    call() second: 1  timing: true
+    watch() second: 1
 
     10s
-    end() It's time  timing: false
+    end() It's time
 */
 ````
 
-## 刷新页面后继续之前读秒进度
+## 短信发送，刷新页面后继续之前读秒进度
 
-> 数据会被缓存到 localStorage 或 cookie
-
-<button type="submit" id="cacheTime" >text</button>
-<br/>
-secondCount:<span id="secondCount2"></span>
-
+<button type="button" id="sendSms" >SendSms</button>
+<span id="cacheTip"></span>
+<br />
+view page second: <span id="cacheSec"></span>
 ````js
 var Timer = require('fast-timer')
 var time = new Timer({
-    second: 5,
-    // cache 参数作为缓存的唯一标识
-    cache: 'abc'
+    second: 10,
+    cache: 'abs'
 })
-// 通过 time.secondCount 可获取读秒倒数。如果之前设置过缓存读秒，secondCount 不一定等于 second。
-document.getElementById('secondCount2').innerHTML = time.secondCount
-time.start()
-time.call(function (second) {
-    document.getElementById('cacheTime').innerHTML = second
+if (time.hasCache()) {
+    document.getElementById('cacheTip').innerHTML = '缓存结束时间存在并没超时，执行 run。'
+    time.run()
+}
+document.getElementById('cacheSec').innerHTML = time.second()
+time.watch(function () {
+    document.getElementById('sendSms').innerHTML = this.second()
 })
 time.end(function () {
-    document.getElementById('cacheTime').innerHTML = 'done'
+    document.getElementById('sendSms').innerHTML = 'cache end'
 })
+
+document.getElementById('sendSms').onclick = function () {
+    // 不在计时状态
+    if (time.free) {
+        time.run()
+    }
+}
 ````
 
-
 > 建议计时超过10分钟。不要使用 cache 功能。因为cache是将数据存储到 localStorage 或 cookie。超过10分钟的建议打开页面时候让服务器返回明确的剩余时间。
+
+
 
 
 ## 参与开发

@@ -21,7 +21,7 @@
   "github_master": "fast-flow",
   "dependencies": {
     "moment": "^2.14.1",
-    "simple-browser-storage": "^0.1.3"
+    "simple-browser-storage": "0.1.3"
   },
   "devDependencies": {
     "babel-core": "^6.7.6",

@@ -1,83 +1,130 @@
-import moment from "moment/min/moment.min"
+// import moment from "moment/min/moment.min"
 import simpleBrowserStorage from "simple-browser-storage"
 class Timer {
-    constructor (settings) {
+    constructor(settings) {
         let self = this
-        self._settings = settings
-        self._timer = false
-        self.timing = false
-        self._callQueue = []
-        self._endQueue = []
-        self.secondCount = null
-        self._browserStorage = simpleBrowserStorage({
-            name: self._settings.cache,
-            expiresTime: Math.ceil(self._settings.second/60)
-        })
-        if (self._settings.cache) {
-            self._cache()
-        }
-        // new Timer 后可能会读取 secondCount 所以在此处设置 secondCount
-        // 此代码务必阿紫 self._cache() 后执行
-        self.secondCount = self._settings.second
-    }
-    _setEndDateInCache() {
-        let self = this
-        self._browserStorage.setState({
-            endDate: moment().add(self._settings.second, 's')
-        })
-    }
-    _cache() {
-        let self = this
-        let localData
-        let dateDiff
-        let secondDiff
-
-        localData = self._browserStorage.getState()
-        if (localData.endDate) {
-            // 结束时间已过期
-            if (moment().isAfter(moment(localData.endDate))) {
-                self._setEndDateInCache()
+        self._ = {
+            settings: settings,
+            _useGetSecondAndSetSecondChangeThis: settings.second,
+            cache: {
+                /*
+                abc: {
+                    "expires": "2016-09-08T06:35:53.441Z",
+                    "endDate": "2016-09-08T06:35:53.441Z"
+                }
+                */
+            },
+            callback : {
+                watch: [],
+                end: []
             }
         }
-        else {
-            self._setEndDateInCache()
-        }
-        localData = self._browserStorage.getState()
-        dateDiff = moment(localData.endDate).diff(moment())
-        secondDiff = dateDiff/1000
-        secondDiff = Math.round(secondDiff)
-        self._settings.second = secondDiff
+        self.free = true
+        self._storage = simpleBrowserStorage({
+            name: settings.cache,
+            // storage 过期时间进来与秒数匹配，至少 1 分钟
+            expiresTime: Math.ceil(self._.settings.second/60)
+        })
     }
-    _timeout() {
+    _setEndDateInCache(second) {
         let self = this
-        if (self.secondCount === 0) {
-            self.timing = false
-            self._endQueue.forEach(function (fn) {
-                fn()
+        self._storage.setState({
+            endDate: moment().add(second, 's')
+        })
+    }
+    _cacheTimeout() {
+        let self = this
+        let endDate = self._storage.getState().endDate
+        return moment().isAfter(moment(endDate))
+    }
+    _updateSecond() {
+        let self = this
+        // 每次读取 second 必须判断缓存，从缓存中取
+        if (self._.settings.cache && !self.free) {
+            endDate = self._storage.getState().endDate
+            if (endDate) {
+                // 结束时间已过期
+                if (self._cacheTimeout()) {
+                    self._setEndDateInCache(self._._useGetSecondAndSetSecondChangeThis)
+                }
+                else {
+                    // 存在结束时间并未过期则不需要设置新的结束时间到缓存
+                }
+            }
+            else {
+                self._setEndDateInCache(self._._useGetSecondAndSetSecondChangeThis)
+            }
+            endDate = self._storage.getState().endDate
+            dateDiff = moment(endDate).diff(moment())
+            secondDiff = dateDiff/1000
+            secondDiff = Math.round(secondDiff)
+            self._setSecond(secondDiff)
+        }
+    }
+    _getSecond() {
+        let self = this
+        let dateDiff
+        let secondDiff
+        let endDate
+        self._updateSecond.bind(self)
+        return self._._useGetSecondAndSetSecondChangeThis
+    }
+    _setSecond(second) {
+        let self = this
+        self._._useGetSecondAndSetSecondChangeThis = second
+    }
+    _clock() {
+        let self = this
+        let data = self._
+        let second = self._getSecond()
+        if (second === 0) {
+            self.free = true
+            data.callback.end.forEach(function (fn) {
+                fn.apply(self)
             })
         }
         else {
-            self._callQueue.forEach(function (fn) {
-                fn(self.secondCount)
+            data.callback.watch.forEach(function (fn) {
+                fn.apply(self)
             })
-            self.secondCount--
-            setTimeout(self._timeout.bind(self), 1000)
+            self._setSecond(second - 1)
+            setTimeout(self._clock.bind(self), 1000)
         }
     }
-    start() {
+    // 存在缓存并没有超时
+    hasCache() {
         let self = this
-        self.secondCount = self._settings.second
-        self.timing = true
-        // 延迟出发一遍又 call 绑定更多事件
-        setTimeout(self._timeout.bind(self), 0)
+        let timeout = true
+        if (self._cacheTimeout()) {
+            timeout = false
+        }
+        return timeout
     }
-    call(fn) {
+    run() {
         let self = this
-        self._callQueue.push(fn)
+        if (!self.free) {
+            throw new Error('Please check time.timing(). Just like: if (time.timing()) { time.run() }')
+            return false
+        }
+        // @1 @2 的顺序不能错，因为 _updateSecond 中需要读取 self.free
+        // @1
+        self._updateSecond.bind(self)
+        // @2
+        self.free = false
+        // 延迟执行，原因是 watch 和 end 需要加回调
+        setTimeout(self._clock.bind(self),0)
+    }
+    watch(fn) {
+        let self = this
+        self._.callback.watch.push(fn)
     }
     end(fn) {
         let self = this
-        self._endQueue.push(fn)
+        self._.callback.end.push(fn)
+    }
+    second() {
+        let self = this
+        return self._getSecond()
     }
 }
 module.exports = Timer
