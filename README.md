@@ -1,7 +1,8 @@
 # timer
 
 <script src="http://cdn.bootcss.com/moment.js/2.14.1/moment.min.js" ></script>
-
+<script src="http://cdn.bootcss.com/react/0.14.8/react.min.js" ></script>
+<script src="http://cdn.bootcss.com/react/0.14.8/react-dom.min.js" ></script>
 > 可复用定时器，可用于限制邮件短信发送
 
 ```
@@ -80,8 +81,6 @@ document.getElementById('sendSms').onclick = function () {
 ````
 
 > 建议计时超过10分钟。不要使用 cache 功能。因为cache是将数据存储到 localStorage 或 cookie。超过10分钟的建议打开页面时候让服务器返回明确的剩余时间。
-
-
 
 
 ## 参与开发

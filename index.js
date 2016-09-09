@@ -3,6 +3,7 @@ import simpleBrowserStorage from "simple-browser-storage"
 class Timer {
     constructor(settings) {
         let self = this
+
         self._ = {
             settings: settings,
             _useGetSecondAndSetSecondChangeThis: settings.second,
@@ -32,23 +33,21 @@ class Timer {
             endDate: moment().add(second, 's')
         })
     }
-    _cacheTimeout() {
-        let self = this
-        let endDate = self._storage.getState().endDate
-        return moment().isAfter(moment(endDate))
-    }
     _updateSecond() {
         let self = this
+        let endDate
+        let dateDiff
+        let secondDiff
         // 每次读取 second 必须判断缓存，从缓存中取
         if (self._.settings.cache && !self.free) {
             endDate = self._storage.getState().endDate
             if (endDate) {
                 // 结束时间已过期
-                if (self._cacheTimeout()) {
-                    self._setEndDateInCache(self._._useGetSecondAndSetSecondChangeThis)
+                if (self.hasCache()) {
+                    // 存在结束时间并未过期则不需要设置新的结束时间到缓存
                 }
                 else {
-                    // 存在结束时间并未过期则不需要设置新的结束时间到缓存
+                    self._setEndDateInCache(self._._useGetSecondAndSetSecondChangeThis)
                 }
             }
             else {
@@ -63,7 +62,6 @@ class Timer {
     }
     _getSecond() {
         let self = this
-        let dateDiff
         let secondDiff
         let endDate
         self._updateSecond.bind(self)
@@ -94,11 +92,13 @@ class Timer {
     // 存在缓存并没有超时
     hasCache() {
         let self = this
-        let timeout = true
-        if (self._cacheTimeout()) {
-            timeout = false
+        let endDate = self._storage.getState().endDate
+        if (endDate) {
+            return moment().isBefore(moment(endDate))
         }
-        return timeout
+        else {
+            return false
+        }
     }
     run() {
         let self = this
@@ -106,11 +106,14 @@ class Timer {
             throw new Error('Please check time.timing(). Just like: if (time.timing()) { time.run() }')
             return false
         }
+        // 一个组件重复 run 需要重置 second
+        self._setSecond(self._.settings.second)
         // @1 @2 的顺序不能错，因为 _updateSecond 中需要读取 self.free
         // @1
-        self._updateSecond.bind(self)
-        // @2
         self.free = false
+        // @2
+        self._updateSecond()
+
         // 延迟执行，原因是 watch 和 end 需要加回调
         setTimeout(self._clock.bind(self),0)
     }
