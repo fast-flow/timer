@@ -1,4 +1,4 @@
-// import moment from "moment/min/moment.min"
+import moment from "moment"
 import simpleBrowserStorage from "simple-browser-storage"
 class Timer {
     constructor(settings) {

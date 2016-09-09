@@ -1,6 +1,6 @@
 {
   "name": "fast-timer",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "desc",
   "scripts": {
     "dev": "fis3 release -wL -d ./output",
