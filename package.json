@@ -1,7 +1,7 @@
 {
   "name": "fast-timer",
   "version": "0.1.0",
-  "description": "desc",
+  "description": "countdown timer，Sms and email sending limit | 定时器，可用于限制短信邮件发送限制。",
   "scripts": {
     "dev": "fis3 release -wL -d ./output",
     "test": "mocha --timeout 60000",
