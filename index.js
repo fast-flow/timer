@@ -2,82 +2,84 @@ import moment from "moment/min/moment.min"
 import simpleBrowserStorage from "simple-browser-storage"
 class Timer {
     constructor (settings) {
-        let self = this
-        self._settings = settings
-        self._timer = false
-        self.timing = false
-        self._callQueue = []
-        self._endQueue = []
-        self.secondCount = null
-        self._browserStorage = simpleBrowserStorage({
-            name: self._settings.cache,
-            expiresTime: Math.ceil(self._settings.second/60)
+        settings = settings || {}
+        this.free = true
+        this._watchQueue = []
+        this._settings = settings
+        this._storage = simpleBrowserStorage({
+            name: settings.cache,
+            expiresTime: 43200
         })
-        if (self._settings.cache) {
-            self._cache()
+    }
+    _countDown () {
+        let self = this
+        // @1 @2 必须按先后顺序执行，因为 watch 需要获取 free
+        // @1 Start
+        if (self._countDownSec === 0) {
+            this.free = true
         }
-        // new Timer 后可能会读取 secondCount 所以在此处设置 secondCount
-        // 此代码务必阿紫 self._cache() 后执行
-        self.secondCount = self._settings.second
+        else {
+            setTimeout(self._countDown.bind(self), 1000)
+        }
+        // @1 End
+        // @2 Start
+        self._watchQueue.forEach(function (fn) {
+            fn.call(self, {
+                sec: self._countDownSec
+            })
+        })
+        // 递减需要在 watch 后执行。例如 sec 为 10 秒，最初应该 watch 触发 10 ，而不是 9。
+        self._countDownSec = self._countDownSec - 1
+        // @2 End
     }
-    _setEndDateInCache() {
+    _setEndDateInCache(sec) {
         let self = this
-        self._browserStorage.setState({
-            endDate: moment().add(self._settings.second, 's')
+        self._storage.setState({
+            endDate: moment().add(sec, 's')
         })
     }
-    _cache() {
+    cacheSec() {
         let self = this
-        let localData
+        let endDate
         let dateDiff
         let secondDiff
-
-        localData = self._browserStorage.getState()
-        if (localData.endDate) {
-            // 结束时间已过期
-            if (moment().isAfter(moment(localData.endDate))) {
-                self._setEndDateInCache()
-            }
+        // 每次读取 second 必须判断缓存，从缓存中取
+        if (self._settings.cache) {
+           endDate = self._storage.getState().endDate
+           if (!endDate) {
+               return false
+           }
+           if (moment().isAfter(moment(endDate))) {
+               return false
+           }
+           dateDiff = moment(endDate).diff(moment())
+           secondDiff = dateDiff/1000
+           secondDiff = Math.round(secondDiff)
+           return secondDiff
         }
         else {
-            self._setEndDateInCache()
-        }
-        localData = self._browserStorage.getState()
-        dateDiff = moment(localData.endDate).diff(moment())
-        secondDiff = dateDiff/1000
-        secondDiff = Math.round(secondDiff)
-        self._settings.second = secondDiff
-    }
-    _timeout() {
-        let self = this
-        if (self.secondCount === 0) {
-            self.timing = false
-            self._endQueue.forEach(function (fn) {
-                fn()
-            })
-        }
-        else {
-            self._callQueue.forEach(function (fn) {
-                fn(self.secondCount)
-            })
-            self.secondCount--
-            setTimeout(self._timeout.bind(self), 1000)
+            return false
         }
     }
-    start() {
-        let self = this
-        self.secondCount = self._settings.second
-        self.timing = true
-        // 延迟出发一遍又 call 绑定更多事件
-        setTimeout(self._timeout.bind(self), 0)
+    watch(fn) {
+        this._watchQueue.push(fn)
     }
-    call(fn) {
-        let self = this
-        self._callQueue.push(fn)
-    }
-    end(fn) {
-        let self = this
-        self._endQueue.push(fn)
+    start(sec) {
+        if (typeof sec !== 'number') {
+            sec = parseInt(sec, 10)
+        }
+        if (isNaN(sec)) {
+            throw new Error('time.start(sec), sec need to be a number!')
+        }
+        if (typeof sec !== 'number') {
+            throw new Error('time.start(sec), sec need to be a number!')
+        }
+        if (this._settings.cache && !this.cacheSec()) {
+            this._setEndDateInCache(sec)
+        }
+        this.free = false
+        this._countDownSec = sec
+        this._countDown()
     }
 }
 module.exports = Timer

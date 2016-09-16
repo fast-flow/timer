@@ -3,7 +3,8 @@ var webpackConfig = {
     devtool: 'source-map',
     externals: {
         'react': 'React',
-        'react-dom': 'ReactDOM'
+        'react-dom': 'ReactDOM',
+        'moment/min/moment.min': 'moment'
     },
     module: {
         resolve: {
