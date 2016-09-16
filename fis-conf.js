@@ -4,7 +4,7 @@ var webpackConfig = {
     externals: {
         'react': 'React',
         'react-dom': 'ReactDOM',
-        moment: 'moment'
+        'moment/min/moment.min': 'moment'
     },
     module: {
         resolve: {

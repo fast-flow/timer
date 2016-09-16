@@ -1,94 +1,165 @@
 # timer
 
-<script src="http://cdn.bootcss.com/moment.js/2.14.1/moment.min.js" ></script>
 <script src="http://cdn.bootcss.com/react/0.14.8/react.min.js" ></script>
 <script src="http://cdn.bootcss.com/react/0.14.8/react-dom.min.js" ></script>
+<script src="http://cdn.bootcss.com/moment.js/2.14.1/moment.min.js"></script>
+
 > 可复用定时器，可用于限制邮件短信发送
 
 ```
 npm install fast-timer --save
 ```
 
-<button type="submit" id="demo1" ></button>
+<button type="button" id="demo" >click</button>
 
 ````js
 var Timer = require('fast-timer')
-var time = new Timer({
-    second: 10
+
+var time = new Timer()
+var demo = document.getElementById('demo')
+// 定时回调
+time.watch(function (date) {
+    console.log('second:' + date.sec)
+    console.log('free:' + time.free)
+    if (date.sec === 0) {
+        demo.innerHTML = 'done'
+    }
+    else {
+        demo.innerHTML = date.sec
+    }
 })
-var demo1 = document.getElementById('demo1')
-time.watch(function () {
-    demo1.innerHTML = this.second()
-})
-
-time.end(function () {
-    demo1.innerHTML = 'end'
-})
-time.run()
-/*
-    0s
-    watch() second: 10
-
-    1s
-    watch() second: 9
-
-    2s
-    watch() second: 8
-
-    ...
-
-    8s
-    watch() second: 2
-
-    9s
-    watch() second: 1
-
-    10s
-    end() It's time
-*/
-````
-
-## 短信发送，刷新页面后继续之前读秒进度
-
-<button type="button" id="sendSms" >SendSms</button>
-<span id="cacheTip"></span>
-<br />
-view page second: <span id="cacheSec"></span>
-````js
-var Timer = require('fast-timer')
-var time = new Timer({
-    second: 10,
-    cache: 'abs'
-})
-if (time.hasCache()) {
-    document.getElementById('cacheTip').innerHTML = '缓存结束时间存在并没超时，执行 run。'
-    time.run()
-}
-document.getElementById('cacheSec').innerHTML = time.second()
-time.watch(function () {
-    document.getElementById('sendSms').innerHTML = this.second()
-})
-time.end(function () {
-    document.getElementById('sendSms').innerHTML = 'cache end'
-})
-
-document.getElementById('sendSms').onclick = function () {
-    // 不在计时状态
+demo.onclick = function (){
     if (time.free) {
-        time.run()
+        time.start(10)
     }
 }
 ````
 
-> 建议计时超过10分钟。不要使用 cache 功能。因为cache是将数据存储到 localStorage 或 cookie。超过10分钟的建议打开页面时候让服务器返回明确的剩余时间。
 
+## cache
+
+<button type="button" id="cacheBtn" >cache</button>
+
+````js
+var Timer = require('fast-timer')
+var time = new Timer({
+    cache: 'abc'
+})
+var cacheBtn = document.getElementById('cacheBtn')
+if (time.cacheSec()) {
+    time.start(time.cacheSec())
+    cacheBtn.innerHTML = time.cacheSec()
+}
+time.watch(function (date) {
+    console.log('second:' + date.sec)
+    console.log('free:' + time.free)
+    if (date.sec === 0) {
+        cacheBtn.innerHTML = 'done'
+    }
+    else {
+        cacheBtn.innerHTML = date.sec
+    }
+})
+cacheBtn.onclick = function () {
+    if (time.free) {
+        time.start(10)
+    }
+}
+````
+
+
+## React - simple
+
+<div id="react1"></div>
+
+````js
+var Timer = require('fast-timer')
+var React = require('react')
+var ReactDOM = require('react-dom')
+var App = React.createClass({
+    getInitialState: function () {
+        return {
+            sec: 0
+        }
+    },
+    componentWillMount: function () {
+        var self = this
+        self.time = new Timer()
+        self.time.watch(function (date) {
+            self.setState({
+                sec: date.sec
+            })
+        })
+    },
+    startTimer: function () {
+        if (this.time.free) {
+            this.time.start(this.props.sec)
+        }
+    },
+    render: function () {
+        return (
+            <button onClick={this.startTimer}>
+            {this.state.sec?this.state.sec:'click'}
+            </button>
+        )
+    }
+})
+ReactDOM.render(<App sec={10} />, document.getElementById('react1'))
+````
+
+## React - cache
+
+<div id="reactCache"></div>
+
+````js
+var Timer = require('fast-timer')
+var React = require('react')
+var ReactDOM = require('react-dom')
+var App = React.createClass({
+    getInitialState: function () {
+        return {
+            sec: 0
+        }
+    },
+    componentWillMount: function () {
+        var self = this
+        self.time = new Timer({
+            cache: 'abc'
+        })
+        self.time.watch(function (date) {
+            self.setState({
+                sec: date.sec
+            })
+        })
+        if (self.time.cacheSec()) {
+            self.time.start(self.time.cacheSec())
+        }
+    },
+    startTimer: function () {
+        if (this.time.free) {
+            this.time.start(this.props.sec)
+        }
+    },
+    render: function () {
+        return (
+            <button onClick={this.startTimer}>
+            {this.state.sec?this.state.sec:'click'}
+            </button>
+        )
+    }
+})
+ReactDOM.render(<App sec={10} />, document.getElementById('reactCache'))
+````
 
 ## 参与开发
 
 ```shell
-git clone http://github.com/fast-flow/timer
+git clone
 cd timer
 npm run update
-npm run s
 npm run dev
+npm run s
 ```
+
+
+<link rel="stylesheet" href="http://cdn.bootcss.com/highlight.js/9.6.0/styles/atom-one-dark.min.css">
