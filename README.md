@@ -21,7 +21,7 @@ html .m-btn--timing {
 }
 ````
 
-## btn
+## fast-timer/btn
 
 <button type="button" id="btn" class="m-btn" >timerBtn</button>
 
@@ -31,7 +31,8 @@ var btn = document.getElementById('btn')
 var btnDefaultText = btn.innerHTML
 timerBtn(btn, {
     sec: 10,
-    cache: 'some23213412',
+    // cache: refresh page auto start | 缓存： 刷新页面自动开始计时
+    cache: 'some242358',
     timingClass: 'm-btn--timing',
     start: function () {
         // send ajax
