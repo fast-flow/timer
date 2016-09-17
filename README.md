@@ -6,11 +6,54 @@
 
 > 可复用定时器，可用于限制邮件短信发送
 
+> Base on webpack+es6 build # 基于 webpack+es6 构建
+
 ```
 npm install fast-timer --save
 ```
 
+````css
+.m-btn {
+    background-color: #999;border:none;
+}
+html .m-btn--timing {
+    background-color: #eee;
+}
+````
+
+## btn
+
+<button type="button" id="btn" class="m-btn" >timerBtn</button>
+
+````js
+var timerBtn = require('fast-timer/btn')
+var btn = document.getElementById('btn')
+var btnDefaultText = btn.innerHTML
+timerBtn(btn, {
+    sec: 10,
+    cache: 'some23213412',
+    timingClass: 'm-btn--timing',
+    start: function () {
+        // send ajax
+        console.log('start')
+    },
+    watch: function (date) {
+        if (date.sec) {
+            return date.sec + 's'
+        }
+        else {
+            return 'btnDefaultText'
+        }
+    }
+})
+````
+
+
 <button type="button" id="demo" >click</button>
+
+## DIY | 使用API定制开发
+
+### simple
 
 ````js
 var Timer = require('fast-timer')
@@ -36,7 +79,7 @@ demo.onclick = function (){
 ````
 
 
-## cache
+### cache
 
 <button type="button" id="cacheBtn" >cache</button>
 
@@ -68,7 +111,7 @@ cacheBtn.onclick = function () {
 ````
 
 
-## React - simple
+### React - simple
 
 <div id="react1"></div>
 
@@ -107,7 +150,7 @@ var App = React.createClass({
 ReactDOM.render(<App sec={10} />, document.getElementById('react1'))
 ````
 
-## React - cache
+### React - cache
 
 <div id="reactCache"></div>
 

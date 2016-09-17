@@ -78,6 +78,7 @@ fis.match('*.md:js', {
     parser: [
         function (content) {
             return content.replace(/["']fast-timer["']/, '"./index"')
+                          .replace(/["']fast-timer\/btn["']/, '"./btn"')
         },
         fis.plugin('webpack', webpackConfig),
         fis.plugin('inlinecss')
