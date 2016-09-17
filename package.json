@@ -15,12 +15,13 @@
     "countdown"
   ],
   "repository": {
-   "type": "git",
-   "url": "https://github.com/fast-flow/timer"
- },
+    "type": "git",
+    "url": "https://github.com/fast-flow/timer"
+  },
   "author": "nimojs",
   "github_master": "fast-flow",
   "dependencies": {
+    "classnames": "^2.2.5",
     "moment": "^2.14.1",
     "simple-browser-storage": "0.1.3"
   },

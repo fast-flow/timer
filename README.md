@@ -1,12 +1,19 @@
 # timer
 
-<script src="http://cdn.bootcss.com/react/0.14.8/react.min.js" ></script>
+<script src="http://cdn.bootcss.com/react/0.14.8/react.js" ></script>
 <script src="http://cdn.bootcss.com/react/0.14.8/react-dom.min.js" ></script>
 <script src="http://cdn.bootcss.com/moment.js/2.14.1/moment.min.js"></script>
 
 > 可复用定时器，可用于限制邮件短信发送
 
 > Base on webpack+es6 build # 基于 webpack+es6 构建
+
+## Features
+
+- React
+- DOM function
+- Cache second (localStorage or cookie)
+- DIY
 
 ```
 npm install fast-timer --save
@@ -34,9 +41,10 @@ timerBtn(btn, {
     // cache: refresh page auto start | 缓存： 刷新页面自动开始计时
     cache: 'some242358',
     timingClass: 'm-btn--timing',
-    start: function () {
-        // send ajax
-        console.log('start')
+    start: function (run) {
+        setTimeout(function () {
+            run()
+        }, 500)
     },
     watch: function (date) {
         if (date.sec) {

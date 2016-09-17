@@ -4,14 +4,15 @@ var webpackConfig = {
     externals: {
         'react': 'React',
         'react-dom': 'ReactDOM',
-        'moment/min/moment.min': 'moment'
+        'moment/min/moment.min': 'moment',
+        'moment': 'moment'
+    },
+    resolve: {
+        alias: {
+            'fast-timer': './'
+        }
     },
     module: {
-        resolve: {
-            alias: {
-                'xtemplate': 'xtemplate/lib/runtime'
-            }
-        },
         postLoaders: [
             // 如果不需要兼容IE8请去掉 es3ify
             {
@@ -76,9 +77,11 @@ fis.match('*.less', {
 // https://github.com/fex-team/fis3/issues/852
 fis.match('*.md:js', {
     parser: [
-        function (content) {
-            return content.replace(/["']fast-timer["']/, '"./index"')
-                          .replace(/["']fast-timer\/btn["']/, '"./btn"')
+        function (content, file) {
+
+            return content
+            // return content.replace(/["']fast-timer["']/, '"./index"')
+            //               .replace(/["']fast-timer\/btn["']/, '"./btn"')
         },
         fis.plugin('webpack', webpackConfig),
         fis.plugin('inlinecss')
