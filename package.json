@@ -1,6 +1,6 @@
 {
   "name": "fast-timer",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "countdown timer，Sms and email sending limit | 定时器，可用于限制短信邮件发送限制。",
   "scripts": {
     "dev": "fis3 release -wL -d ./output",

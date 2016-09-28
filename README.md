@@ -28,22 +28,53 @@ html .m-btn--timing {
 }
 ````
 
-## fast-timer/btn
+## fast-timer/react
 
-<button type="button" id="btn" class="m-btn" >timerBtn</button>
+<div id="reactNode"></div>
 
 ````js
-var timerBtn = require('fast-timer/btn')
+var ReactDOM = require('react-dom')
+var TimerBtn = require('fast-timer/lib/react')
+var props = {
+    sec: 5,
+    // cache: refresh page auto start | 缓存： 刷新页面自动开始计时
+    cache: 'somer983ghiu3h',
+    className: 'm-btn',
+    timingClass: 'm-btn--timing',
+    trigger: function (start) {
+        // mock send ajax timeout
+        setTimeout(function () {
+            start()
+        }, 500)
+    },
+    html: 'React Send',
+    watch: function (date) {
+        if (date.sec) {
+            return date.sec + 's'
+        }
+        else {
+            return 'Resend'
+        }
+    }
+}
+ReactDOM.render(<TimerBtn {...props} />, document.getElementById('reactNode'))
+````
+
+## fast-timer/btn
+
+<button type="button" id="btn" class="m-btn" >Send</button>
+
+````js
+var timerBtn = require('fast-timer/lib/btn')
 var btn = document.getElementById('btn')
-var btnDefaultText = btn.innerHTML
 timerBtn(btn, {
     sec: 10,
     // cache: refresh page auto start | 缓存： 刷新页面自动开始计时
     cache: 'some242358',
     timingClass: 'm-btn--timing',
-    start: function (run) {
+    trigger: function (start) {
         setTimeout(function () {
-            run()
+            start()
         }, 500)
     },
     watch: function (date) {
@@ -51,7 +82,7 @@ timerBtn(btn, {
             return date.sec + 's'
         }
         else {
-            return 'btnDefaultText'
+            return 'Resend'
         }
     }
 })
@@ -203,7 +234,7 @@ var App = React.createClass({
 ReactDOM.render(<App sec={10} />, document.getElementById('reactCache'))
 ````
 
-## 参与开发
+## development | 参与开发
 
 ```shell
 git clone

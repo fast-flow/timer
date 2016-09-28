@@ -9,7 +9,7 @@ var webpackConfig = {
     },
     resolve: {
         alias: {
-            'fast-timer': './'
+            'fast-timer': __dirname + '/'
         }
     },
     module: {
