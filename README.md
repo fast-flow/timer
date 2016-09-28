@@ -35,6 +35,7 @@ html .m-btn--timing {
 ````js
 var ReactDOM = require('react-dom')
 var TimerBtn = require('fast-timer/lib/react')
+var reactSendAjax = false
 var props = {
     sec: 5,
     // cache: refresh page auto start | 缓存： 刷新页面自动开始计时
@@ -42,10 +43,19 @@ var props = {
     className: 'm-btn',
     timingClass: 'm-btn--timing',
     trigger: function (start) {
-        // mock send ajax timeout
-        setTimeout(function () {
-            start()
-        }, 500)
+        console.log('react trigger')
+        if (reactSendAjax) {
+            return
+        }
+        else {
+            console.log('react start')
+            reactSendAjax = true
+            // mock send ajax timeout
+            setTimeout(function () {
+                start()
+                reactSendAjax = false
+            }, 1000)
+        }
     },
     html: 'React Send',
     watch: function (date) {
@@ -67,15 +77,26 @@ ReactDOM.render(<TimerBtn {...props} />, document.getElementById('reactNode'))
 ````js
 var timerBtn = require('fast-timer/lib/btn')
 var btn = document.getElementById('btn')
+var btnSendAjax = false
 timerBtn(btn, {
-    sec: 10,
+    sec: 5,
     // cache: refresh page auto start | 缓存： 刷新页面自动开始计时
     cache: 'some242358',
     timingClass: 'm-btn--timing',
     trigger: function (start) {
+        console.log('btn trigger')
+        if (btnSendAjax) {
+            return
+        }
+        else {
+            btnSendAjax = true
+        }
+        // mock send ajax timeout
         setTimeout(function () {
+            console.log('btn start')
+            btnSendAjax = false
             start()
-        }, 500)
+        }, 1000)
     },
     watch: function (date) {
         if (date.sec) {
