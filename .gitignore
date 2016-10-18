@@ -1,3 +1,9 @@
 npm-debug.log
 output
 node_modules
+
+# fast-boot ignore file
+node_modules
+.DS_Store
+npm-debug.log
+output
