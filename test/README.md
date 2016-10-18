@@ -14,7 +14,7 @@ markrun
 -->
 ````js
 // 在此处使用 markrun 导出模块到全局变量，供 test/**.js 使用
-window._Package = require('<%= name %>')
+window._Package = require('fast-timer')
 ````
 
 <script src="./test.demo.js" ></script>
