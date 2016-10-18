@@ -6,7 +6,7 @@
 
 > 可复用定时器，可用于限制邮件短信发送
 
-> Base on webpack+es6 build # 基于 webpack+es6 构建
+> Online demo: https://fast-flow.github.io/timer/
 
 ## Features
 
