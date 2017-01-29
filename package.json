@@ -1,6 +1,6 @@
 {
   "name": "fast-timer",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "countdown timer，Sms and email sending limit | 定时器，可用于限制短信邮件发送限制。",
   "scripts": {
     "replace": "node ./_fastboot/init",
@@ -27,8 +27,8 @@
   "github_master": "fast-flow",
   "dependencies": {
     "classnames": "^2.2.5",
-    "moment": "^2.14.1",
-    "simple-browser-storage": "0.1.3"
+    "localstorage-browser-polyfill": "^0.1.0",
+    "moment": "^2.14.1"
   },
   "devDependencies": {
     "babel-core": "^6.7.6",
