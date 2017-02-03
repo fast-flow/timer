@@ -30,45 +30,7 @@ html .m-btn--timing {
 
 ## fast-timer/react
 
-<div id="reactNode"></div>
-
-````js
-var ReactDOM = require('react-dom')
-var TimerBtn = require('fast-timer/lib/react')
-var reactSendAjax = false
-var props = {
-    sec: 5,
-    // cache: refresh page auto start | 缓存： 刷新页面自动开始计时
-    cache: 'somer983ghiu3h',
-    className: 'm-btn',
-    timingClass: 'm-btn--timing',
-    trigger: function (start) {
-        console.log('react trigger')
-        if (reactSendAjax) {
-            return
-        }
-        else {
-            console.log('react start')
-            reactSendAjax = true
-            // mock send ajax timeout
-            setTimeout(function () {
-                start()
-                reactSendAjax = false
-            }, 1000)
-        }
-    },
-    html: 'React Send',
-    watch: function (date) {
-        if (date.sec) {
-            return date.sec + 's'
-        }
-        else {
-            return 'Resend'
-        }
-    }
-}
-ReactDOM.render(<TimerBtn {...props} />, document.getElementById('reactNode'))
-````
+> [timer.react](https://github.com/fast-flow/timer.react)
 
 ## fast-timer/btn
 
